@@ -10,4 +10,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
     }
+
+    override fun onStart() {
+        super.onStart()
+        supportFragmentManager
+            .beginTransaction()
+            .addToBackStack(null)
+            .replace(R.id.fragmentContainer, CurrencyConverterFragment())
+            .commit()
+    }
 }
