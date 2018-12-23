@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Currency Converter</string>
     <string name="error_msg_get_rates">Could not find rates. Please, try again later</string>
+    <string name="rate_image">Rate Image</string>
 </resources>

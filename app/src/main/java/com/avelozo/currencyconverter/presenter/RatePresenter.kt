@@ -2,6 +2,7 @@ package com.avelozo.currencyconverter.presenter
 
 
 
+import android.util.Log
 import com.avelozo.currencyconverter.contract.CurrencyConverterContract
 import com.avelozo.currencyconverter.repository.IRatesRepository
 import com.avelozo.currencyconverter.rx.ComposeRx.applySingleSchedulers
@@ -12,20 +13,33 @@ import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 
 class RatePresenter(val ratesRepository: IRatesRepository) : CurrencyConverterContract.Presenter() {
-
-    override fun start(base: String) {
-
-        ratesRepository.getRates(base)
+    override fun updateBaseAmount(base : String, amount: BigDecimal) {
+        ratesRepository.
+            updateBaseAmount(base,  amount)
             .compose(applySingleSchedulers())
             .observeOn(AndroidSchedulers.mainThread())
-            //.repeatWhen{ done -> done.delay(1, TimeUnit.SECONDS) }
             .subscribe (
-                {rateReceiver ->
-                    var ratesList: ArrayList<Pair<String,BigDecimal>> = arrayListOf()
-                    rateReceiver.rates.entries.map{
-                        ratesList.add(Pair(it.key,it.value))
-                    }
-                    view?.updateRates(ratesList)
+                {currency ->
+                    view?.updateRates(currency.rates)
+
+                },
+                {
+                    view?.showRatesErrorMessage()
+                }
+            ).apply {
+                disposables.add(this)
+            }
+    }
+
+
+    override fun getRates() {
+        ratesRepository.getRates()
+            .compose(applySingleSchedulers())
+            .observeOn(AndroidSchedulers.mainThread())
+             .repeatWhen{ done -> done.delay(1, TimeUnit.SECONDS) }
+            .subscribe (
+                {currency ->
+                    view?.updateRates(currency.rates)
 
                 },
         {

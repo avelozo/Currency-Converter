@@ -14,7 +14,8 @@ interface CurrencyConverterContract {
 
     abstract class Presenter : MvpPresenter<View>(){
 
-        abstract fun start(base: String)
+        abstract fun getRates()
+        abstract fun updateBaseAmount(base: String , amount: BigDecimal = 1.toBigDecimal())
 
     }
 }

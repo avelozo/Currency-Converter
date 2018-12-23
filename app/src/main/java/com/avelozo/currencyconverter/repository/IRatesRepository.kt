@@ -1,8 +1,9 @@
 package com.avelozo.currencyconverter.repository
 
-import com.avelozo.currencyconverter.request.RateReceiver
 import io.reactivex.Single
+import java.math.BigDecimal
 
 interface IRatesRepository {
-    fun getRates(base : String) : Single<RateReceiver>
+    fun getRates() : Single<Currency>
+    fun updateBaseAmount(base: String, amount: BigDecimal = 1.toBigDecimal()) : Single<Currency>
 }

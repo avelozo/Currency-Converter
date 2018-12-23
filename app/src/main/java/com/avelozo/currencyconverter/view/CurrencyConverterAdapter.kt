@@ -1,5 +1,6 @@
 package com.avelozo.currencyconverter.view
 
+import android.os.Handler
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
@@ -14,55 +15,96 @@ import com.avelozo.currencyconverter.R
 import java.math.BigDecimal
 import java.util.*
 import kotlin.collections.ArrayList
+import android.os.Looper
+import java.text.NumberFormat
 
 
 class CurrencyConverterAdapter(
-    private var mValues: ArrayList<Pair<String, BigDecimal>>) : RecyclerView.Adapter<CurrencyConverterAdapter.ViewHolder>() {
-    var defaultValue : BigDecimal = 1.toBigDecimal()
+    private var mValues: ArrayList<Pair<String, BigDecimal>>,
+    val onUpdateAmount: (mainCurrency: String, amount : BigDecimal) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private var handler = Handler(Looper.getMainLooper())
+    private var workRunnable: Runnable? = null
+    private val TYPE_MAIN = 0
+    private val TYPE_REGULAR = 1
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.currency_item, parent, false)
-        return ViewHolder(view)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        var viewholder: RecyclerView.ViewHolder
+        if(viewType == TYPE_MAIN){
+            viewholder = MyMainViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.main_currency_item, parent, false))
+        } else {
+            viewholder = MyRegularViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.currency_item, parent, false))
+        }
+        return viewholder
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
-        val convertedValue = defaultValue * mValues[position].second
+        val currencyName = mValues[position].first
+        val format = NumberFormat.getInstance(Locale.UK)
+        format.maximumFractionDigits = 2
+        val currencyValue = format.format(mValues[position].second)
 
-        holder.txtCurrencyName.text = mValues[position].first
+        if(position == 0){
+            holder as MyMainViewHolder
 
-        if(!holder.editTextCurrencyValue.hasFocus())
-            holder.editTextCurrencyValue.setText(convertedValue.toString())
+            holder.editTextCurrencyValue.addTextChangedListener(object : TextWatcher {
 
-        holder.editTextCurrencyValue.onFocusChangeListener =  View.OnFocusChangeListener { _, hasFocus ->
+                override fun afterTextChanged(s: Editable?) {
 
-            if(!hasFocus){
-              return@OnFocusChangeListener
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+                    if(!holder.editTextCurrencyValue.isFocused) return
+
+                    handler.removeCallbacks(workRunnable)
+                    workRunnable = Runnable {
+                        if(holder.editTextCurrencyValue.text.toString().isNotBlank()) {
+
+                            var value =  format.parse(holder.editTextCurrencyValue.text.toString()).toString()
+                            onUpdateAmount(
+                                holder.txtCurrencyName.text.toString(),
+                                BigDecimal(value)
+                            )
+
+                        }
+                    }
+                    handler.postDelayed(workRunnable, 500)
+
+
+                }
+
+            })
+
+            holder.txtCurrencyName.text = currencyName
+            holder.editTextCurrencyValue.setText(currencyValue)
+            holder.editTextCurrencyValue.setSelection(holder.editTextCurrencyValue.length())
+
+        }else{
+            holder as MyRegularViewHolder
+            holder.txtCurrencyName.text = currencyName
+            holder.txtCurrencyValue.text = currencyValue
+
+            holder.currencyItem.setOnClickListener {
+
+                onUpdateAmount(mValues[position].first, mValues[position].second)
+
+                val main = mValues[position]
+                mValues.remove(main)
+                mValues.add(0, main)
+                notifyItemMoved(position, 0)
+
             }
 
-            Collections.swap(mValues, position, 0)
-            notifyItemMoved(position, 0)
 
         }
 
-        holder.editTextCurrencyValue.addTextChangedListener(object : TextWatcher {
 
-            override fun afterTextChanged(s: Editable?) {
-
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-                defaultValue = holder.editTextCurrencyValue.text.toString().toBigDecimal()
-                notifyDataSetChanged()
-
-            }
-
-        })
 
     }
 
@@ -71,7 +113,20 @@ class CurrencyConverterAdapter(
     }
 
 
-    inner class ViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {
+    override fun getItemViewType(position: Int): Int {
+        if(position == 0) return TYPE_MAIN
+        return TYPE_REGULAR
+    }
+
+
+    inner class MyRegularViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {
+        val imgFlag : ImageView  = mView.findViewById(R.id.imgFlag)
+        val txtCurrencyName: TextView = mView.findViewById(R.id.txtCurrencyName)
+        val txtCurrencyValue: TextView = mView.findViewById(R.id.txtCurrencyValue)
+        val currencyItem : ConstraintLayout = mView.findViewById(R.id.currencyItem)
+    }
+
+    inner class MyMainViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {
         val imgFlag : ImageView  = mView.findViewById(R.id.imgFlag)
         val txtCurrencyName: TextView = mView.findViewById(R.id.txtCurrencyName)
         val editTextCurrencyValue: EditText = mView.findViewById(R.id.editTextCurrencyValue)
