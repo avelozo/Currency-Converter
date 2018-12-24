@@ -2,4 +2,49 @@
     <string name="app_name">Currency Converter</string>
     <string name="error_msg_get_rates">Could not find rates. Please, try again later</string>
     <string name="rate_image">Rate Image</string>
+
+
+
+    <!-- Currency names -->
+    <string name="rate_aud">Australian Dollar</string>
+    <string name="rate_brl">Brazilian Real</string>
+    <string name="rate_cad">Canadian Dollar</string>
+    <string name="rate_eur">Euro</string>
+    <string name="rate_bgn">Bulgarian Lev</string>
+    <string name="rate_chf">Swiss Franc</string>
+    <string name="rate_cny">Chinese Yuan</string>
+    <string name="rate_czk">Czech Koruna</string>
+    <string name="rate_dkk">Danish Krone</string>
+    <string name="rate_gbp">Pound sterling</string>
+    <string name="rate_idr">Indonesian Rupiah</string>
+    <string name="rate_ils">Israeli New Shekel</string>
+
+    <!-- falta icone  -->
+    <string name="rate_inr">Indian Rupee</string>
+    <string name="rate_isk">Icelandic Króna</string>
+    <string name="rate_jpy">Japanese Yen</string>
+    <string name="rate_krw">South Korean</string>
+    <string name="rate_mxn">Mexican Peso</string>
+    <string name="rate_myr">Malaysian Ringgit</string>
+    <string name="rate_nok">Norwegian Krone</string>
+    <string name="rate_nzd">New Zealand Dollar</string>
+    <string name="rate_php">Philippine Piso</string>
+    <string name="rate_pln">Poland złoty</string>
+    <string name="rate_ron">Romanian Leu</string>
+    <string name="rate_rub">Russian Ruble</string>
+    <string name="rate_sek">Swedish Krona</string>
+    <string name="rate_sgd">Singapore Dollar</string>
+    <string name="rate_thb">Thai Baht</string>
+    <string name="rate_try">Turkish lira</string>
+    <string name="rate_usd">United States Dollar</string>
+    <string name="rate_zar">South African Rand</string>
+    <string name="rate_hkd">Hong Kong Dollar</string>
+    <string name="rate_hrk">Croatian Kuna</string>
+    <string name="rate_huf">Hungarian Forint</string>
+
+    <string name="rate_not_found"> </string>
+
+
+
+
 </resources>

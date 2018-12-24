@@ -16,6 +16,7 @@ import java.math.BigDecimal
 import java.util.*
 import kotlin.collections.ArrayList
 import android.os.Looper
+import org.w3c.dom.Text
 import java.text.NumberFormat
 
 
@@ -40,7 +41,10 @@ class CurrencyConverterAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
-        val currencyName = mValues[position].first
+        val currencyCode = mValues[position].first
+        val currencyName =  holder.itemView.context.getString(CurrencyInfo.getCurrencyName(currencyCode))
+        val currencyFlagId = CurrencyInfo.getFlagId(currencyCode)
+
         val format = NumberFormat.getInstance(Locale.UK)
         format.maximumFractionDigits = 2
         val currencyValue = format.format(mValues[position].second)
@@ -81,14 +85,18 @@ class CurrencyConverterAdapter(
 
             })
 
+            holder.txtCurrencyCode.text = currencyCode
             holder.txtCurrencyName.text = currencyName
             holder.editTextCurrencyValue.setText(currencyValue)
             holder.editTextCurrencyValue.setSelection(holder.editTextCurrencyValue.length())
+            holder.imgFlag.setImageResource(currencyFlagId)
 
         }else{
             holder as MyRegularViewHolder
+            holder.txtCurrencyCode.text = currencyCode
             holder.txtCurrencyName.text = currencyName
             holder.txtCurrencyValue.text = currencyValue
+            holder.imgFlag.setImageResource(currencyFlagId)
 
             holder.currencyItem.setOnClickListener {
 
@@ -121,6 +129,7 @@ class CurrencyConverterAdapter(
 
     inner class MyRegularViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {
         val imgFlag : ImageView  = mView.findViewById(R.id.imgFlag)
+        val txtCurrencyCode: TextView = mView.findViewById(R.id.txtCurrencyCode)
         val txtCurrencyName: TextView = mView.findViewById(R.id.txtCurrencyName)
         val txtCurrencyValue: TextView = mView.findViewById(R.id.txtCurrencyValue)
         val currencyItem : ConstraintLayout = mView.findViewById(R.id.currencyItem)
@@ -128,6 +137,7 @@ class CurrencyConverterAdapter(
 
     inner class MyMainViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {
         val imgFlag : ImageView  = mView.findViewById(R.id.imgFlag)
+        val txtCurrencyCode: TextView = mView.findViewById(R.id.txtCurrencyCode)
         val txtCurrencyName: TextView = mView.findViewById(R.id.txtCurrencyName)
         val editTextCurrencyValue: EditText = mView.findViewById(R.id.editTextCurrencyValue)
         val currencyItem : ConstraintLayout = mView.findViewById(R.id.currencyItem)

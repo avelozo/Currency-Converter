@@ -2,11 +2,13 @@ package com.avelozo.currencyconverter.view
 
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.avelozo.currencyconverter.contract.CurrencyConverterContract
 import java.math.BigDecimal
 import com.avelozo.currencyconverter.R
@@ -18,6 +20,7 @@ class CurrencyConverterFragment : FragmentAbstract(), CurrencyConverterContract.
 
     private val presenter: CurrencyConverterContract.Presenter by injector.instance()
     private val DEFAULT_BASE = "EUR"
+    private  var recyclerViewState : Parcelable? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -43,13 +46,24 @@ class CurrencyConverterFragment : FragmentAbstract(), CurrencyConverterContract.
         rateRecycler?.adapter = CurrencyConverterAdapter(rates){ base , amount ->
             presenter.updateBaseAmount(base , amount)
         }
-        rateRecycler?.adapter?.notifyDataSetChanged()
+    }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        recyclerViewState = rateRecycler?.layoutManager?.onSaveInstanceState()
+
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        recyclerViewState?.let {
+            rateRecycler?.layoutManager?.onRestoreInstanceState(it)
+        }
     }
 
 
     override fun showRatesErrorMessage() {
-        Log.d("rate","showErrorMessage")
+      Toast.makeText(context, getString(R.string.error_msg_get_rates), Toast.LENGTH_LONG).show()
     }
 
 }
