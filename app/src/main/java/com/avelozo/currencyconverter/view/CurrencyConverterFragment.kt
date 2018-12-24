@@ -4,7 +4,7 @@ package com.avelozo.currencyconverter.view
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +21,7 @@ class CurrencyConverterFragment : FragmentAbstract(), CurrencyConverterContract.
     private val presenter: CurrencyConverterContract.Presenter by injector.instance()
     private val DEFAULT_BASE = "EUR"
     private  var recyclerViewState : Parcelable? = null
+    private var recycler : RecyclerView? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -34,30 +35,40 @@ class CurrencyConverterFragment : FragmentAbstract(), CurrencyConverterContract.
         presenter.updateBaseAmount(DEFAULT_BASE)
         presenter.getRates()
 
+        recycler = view.findViewById(R.id.rateRecycler)
+
         val linearManager = LinearLayoutManager(this.context)
         linearManager.orientation = LinearLayoutManager.VERTICAL
-        rateRecycler?.layoutManager = linearManager
+        recycler?.layoutManager = linearManager
+        recycler?.itemAnimator?.changeDuration = 0
 
     }
 
 
     override fun updateRates(rates: ArrayList<Pair<String, BigDecimal>>) {
 
-        rateRecycler?.adapter = CurrencyConverterAdapter(rates){ base , amount ->
-            presenter.updateBaseAmount(base , amount)
+        if(recycler?.adapter == null) {
+            recycler?.adapter = CurrencyConverterAdapter(rates, { recycler?.smoothScrollToPosition(0) })
+            { base, amount ->
+                presenter.updateBaseAmount(base, amount)
+            }
+        }else{
+            if(rates.size>1)
+            recycler?.adapter?.notifyItemRangeChanged(1,rates.size)
         }
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        recyclerViewState = rateRecycler?.layoutManager?.onSaveInstanceState()
+        recyclerViewState = recycler?.layoutManager?.onSaveInstanceState()
 
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         recyclerViewState?.let {
-            rateRecycler?.layoutManager?.onRestoreInstanceState(it)
+            recycler?.layoutManager?.onRestoreInstanceState(it)
         }
     }
 

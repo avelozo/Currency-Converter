@@ -24,12 +24,13 @@ class RatesRepository (val rateRequest: IRateRequest) : IRatesRepository{
                currencyRepository?.date = rateReceiver.date
 
                val mainRatePair = currencyRepository?.rates?.find { it.first == base }
-               currencyRepository?.rates?.remove(mainRatePair)
                mainRatePair?.let {
+                   if(currencyRepository?.rates?.contains(mainRatePair) == true)
+                   currencyRepository?.rates?.remove(mainRatePair)
                    currencyRepository?.rates?.add(0, Pair(base, amount))
                }
-               rateReceiver.rates.forEach{
-                       rate ->
+                val iterator = rateReceiver.rates.iterator()
+               iterator.forEach{ rate ->
                   val index =  currencyRepository?.rates?.indexOf(currencyRepository?.rates?.find { it.first == rate.key })
                    if(index == null || index < 0){
                        currencyRepository?.rates?.add(Pair(rate.key,rate.value * amount))
@@ -37,7 +38,6 @@ class RatesRepository (val rateRequest: IRateRequest) : IRatesRepository{
                      currencyRepository?.rates?.set(index,Pair(rate.key,rate.value * amount) )
                }
                currencyRepository
-
            }
        }
    }

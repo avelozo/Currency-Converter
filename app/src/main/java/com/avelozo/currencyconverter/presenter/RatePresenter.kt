@@ -2,18 +2,14 @@ package com.avelozo.currencyconverter.presenter
 
 
 
-import android.util.Log
 import com.avelozo.currencyconverter.contract.CurrencyConverterContract
 import com.avelozo.currencyconverter.repository.IRatesRepository
 import com.avelozo.currencyconverter.rx.ComposeRx.applySingleSchedulers
-import com.avelozo.currencyconverter.rx.NetworkError
-import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 
-class RatePresenter(val ratesRepository: IRatesRepository) : CurrencyConverterContract.Presenter() {
+class RatePresenter(private val ratesRepository: IRatesRepository) : CurrencyConverterContract.Presenter() {
     override fun updateBaseAmount(base : String, amount: BigDecimal) {
         ratesRepository.
             updateBaseAmount(base,  amount)
