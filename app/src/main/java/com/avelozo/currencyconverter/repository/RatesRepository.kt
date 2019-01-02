@@ -4,7 +4,7 @@ import com.avelozo.currencyconverter.request.IRateRequest
 import io.reactivex.Single
 import java.math.BigDecimal
 
-class RatesRepository (val rateRequest: IRateRequest) : IRatesRepository{
+class RatesRepository (private val rateRequest: IRateRequest) : IRatesRepository{
 
      private var currencyRepository : Currency? = null
      private var  base = ""

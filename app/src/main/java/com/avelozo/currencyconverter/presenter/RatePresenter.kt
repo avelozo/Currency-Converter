@@ -6,13 +6,14 @@ import com.avelozo.currencyconverter.contract.CurrencyConverterContract
 import com.avelozo.currencyconverter.repository.IRatesRepository
 import com.avelozo.currencyconverter.rx.ComposeRx.applySingleSchedulers
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 
 class RatePresenter(private val ratesRepository: IRatesRepository) : CurrencyConverterContract.Presenter() {
     override fun updateBaseAmount(base : String, amount: BigDecimal) {
         ratesRepository.
-            updateBaseAmount(base,  amount)
+            updateBaseAmount(base, amount)
             .compose(applySingleSchedulers())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe (
@@ -33,7 +34,7 @@ class RatePresenter(private val ratesRepository: IRatesRepository) : CurrencyCon
         ratesRepository.getRates()
             .compose(applySingleSchedulers())
             .observeOn(AndroidSchedulers.mainThread())
-             .repeatWhen{ done -> done.delay(1, TimeUnit.SECONDS) }
+            .repeatWhen{ done -> done.delay(1, TimeUnit.SECONDS) }
             .subscribe (
                 {currency ->
                     view?.updateRates(currency.rates)
